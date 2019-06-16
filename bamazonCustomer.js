@@ -41,19 +41,17 @@ function buyItem() {
             orderQuantity = parseInt(answer.order_quantity);
             orderCost = orderPrice * orderQuantity;
             if (searchedProduct.stock_quantity > answer.order_quantity){
-                console.log("Good to go");
                 connection.query("UPDATE products SET ? WHERE ?",
                 [{stock_quantity: (searchedProduct.stock_quantity - answer.order_quantity)},{item_id: searchedProduct.item_id}], 
                 function(err){
                     if (err) throw err;
                     console.log("Your order was processed successfully!");
                     console.log("Order cost: " + "$" + orderCost);
-                    console.log("Database updated successfully");
                 }
                 )} else {
                     console.log("Not enough in stock");
                 }
-            }
+        }
         connection.end();
     });
 });

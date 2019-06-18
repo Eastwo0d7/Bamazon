@@ -76,40 +76,45 @@ function viewLowInventory() {
     });
 }
 
-// function addInventory(){
-//     inquirer
-//     .prompt([
-//       {
-//         name: "item_id",
-//         type: "input",
-//         message: "What product would you like to update?",
-//         validate: function(value) {
-//           if (isNaN(value) === false) {
-//             return true;
-//           }
-//           return false;
-//         }
-//       },
-//       {
-//         name: "quantity_added",
-//         type: "input",
-//         message: "How many would you like to add?",
-//         validate: function(value) {
-//           if (isNaN(value) === false) {
-//             return true;
-//           }
-//           return false;
-//         }
-//       }
-//     ])
-//     .then(function(answer) {
-//         var updatedProduct = answer.item_id;
-//         var totalAdded = answer.quantity_added;
-//         var currentQuantity = 'SELECT * FROM products WHERE ?';
-//         connection.query(query, currentQuantity, function(err, res) {
-//         if (err) throw err;
-//         console.log()
-//         start();
-//       });
-//     });
-// }
+function addInventory(){
+    inquirer
+    .prompt([
+      {
+        name: "item_id",
+        type: "input",
+        message: "What product would you like to update?",
+        validate: function(value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          return false;
+        }
+      },
+      {
+        name: "quantity_added",
+        type: "input",
+        message: "How many would you like to add?",
+        validate: function(value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          return false;
+        }
+      }
+    ])
+    .then(function(answer) {
+        var updatedProduct = answer.item_id;
+        var totalAdded = parseInt(answer.quantity_added);
+        var query = 'SELECT * FROM products WHERE ?';
+        connection.query(query, {item_id: updatedProduct}, function(err, res) {
+        if (err) throw err;
+        var productQuantity = parseInt(res[0].stock_quantity);
+        var updateStock = 'UPDATE products SET stock_quantity = ' + (productQuantity + totalAdded) + ' WHERE item_id = ' + updatedProduct;
+        connection.query(updateStock, function(err, res) {
+            if (err) throw err;
+            console.log("Stock Quantity for item_id " + updatedProduct + " is now " + (productQuantity + totalAdded));
+        start();
+      });
+    });
+})
+}
